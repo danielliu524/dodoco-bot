@@ -3,8 +3,7 @@ require("dotenv").config()
 
 const client = new Discord.Client({
     intents: [
-        "GUILDS",
-        "GUILD_MESSAGES"
+        "GUILDS"
     ]
 })
 
@@ -17,14 +16,16 @@ client.slashcommands = new Discord.Collection()
 client.loadSlashCommands = (bot, reload) => require("./handlers/slashcommands")(bot, reload)
 client.loadSlashCommands(bot, false)
 
-client.on("ready", async () => {
+client.on("ready", () => {
     const guild = client.guilds.cache.get(guildId)
     console.log("Loading slash commands...")
     if(!guild) {
         return console.error("Target guild not found")
     }
-    await guild.commands.set([...client.slashcommands.values()])
-    console.log(`Successfully loaded in ${client.slashcommands.size}`)
+    guild.commands.set([...client.slashcommands.values()])
+    .then(() => {
+        console.log(`Successfully loaded in ${client.slashcommands.size} command(s)`)
+    })
 })
 
 client.login(process.env.TOKEN);

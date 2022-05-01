@@ -1,16 +1,32 @@
+const Bday = require("../models/Bday")
+
 const run = async(client, interaction) => {
     let month = interaction.options.getInteger("month")
     let day = interaction.options.getInteger("day")
     if(!validDate(day, month)) {
         return interaction.reply("Please enter a valid date!")
     }
-    return interaction.reply("valid date")
+    let userId = interaction.user.id
+    Bday.replaceOne(
+        { userId: {$eq: userId} },
+        {
+            userId: userId,
+            month: month,
+            day: day
+        },
+        { upsert: true },
+        (error, docs) => {
+            if(error) {
+                console.log(error)
+                return interaction.reply("Failed to register birthday...")
+            }
+            return interaction.reply(`${docs.matchedCount ? "Updated" : "Registered"} <@${userId}>'s birthday!`)
+        }
+    )
 }
 
 const validDate = (day, month) => {
-    if(day <= 0 || day > 31) {
-        return false
-    }
+    if(day <= 0 || day > 31) return false
     switch(month) {
         case 1:
         case 3:
@@ -38,19 +54,19 @@ const validDate = (day, month) => {
 
 module.exports = {
     name: "bday",
-    description: "Enter your birthday",
+    description: "Have Dodoco remind everyone when it's your birthday!",
     options: [
         {
-            name: "day",
-            description: "Day of the month you were born.",
-            type: "INTEGER",
-            required: true
-        },
-        {
             name: "month",
-            description: "Month you were born.",
+            description: "1-12",
             type: "INTEGER",
             required: "true"
+        },
+        {
+            name: "day",
+            description: "1-31",
+            type: "INTEGER",
+            required: true
         }
     ],
     run
