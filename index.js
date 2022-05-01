@@ -108,7 +108,7 @@ const StartBirthdayJob = () => {
                             context.drawImage(avatar, canvas.width/2 - avatarHeight/2, canvas.height/2 - avatarHeight/2 - 75, avatarHeight, avatarHeight)
                             const attachment = new MessageAttachment(canvas.toBuffer(), "happybday.png")
                             const embed = new MessageEmbed()
-                            .setColor("#0099ff")
+                            .setColor(user.displayHexColor)
                             .setTitle("🎂 HAPPY BIRTHDAY 🎂")
                             .setDescription(`Happy birthday to <@${bday.userId}>!`)
                             .setImage("attachment://happybday.png")
