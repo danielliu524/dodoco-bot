@@ -7,7 +7,7 @@ const Canvas = require("canvas")
 require("dotenv").config()
 const guildId = process.env.GUILDID
 const announceChannelId = process.env.CHANNELID
-const mongosrv = process.env.mongosrv
+const mongosrv = process.env.MONGOSRV
 
 const client = new Client({
     intents: [
@@ -78,7 +78,7 @@ const StartBirthdayJob = () => {
             bdays.forEach((bday) => {
                 const canvasWidth = 850
                 const canvasHeight = 510
-                const avatarHeight = 250
+                const avatarHeight = 230
                 Canvas.registerFont("./.fonts/ja-jp.ttf", {family: "ja-jp"})
                 const canvas = Canvas.createCanvas(canvasWidth, canvasHeight)
                 const context = canvas.getContext("2d")
@@ -86,20 +86,26 @@ const StartBirthdayJob = () => {
                 .then((background) => {
                     context.drawImage(background, 0, 0, canvas.width, canvas.height)
                     context.font = '72px ja-jp'
-                    context.fillStyle = '#000000'
                     context.textAlign = "center"
                     context.textBaseline = "middle"
-                    context.fillText("HAPPY BIRTHDAY!!!", canvas.width / 2, canvas.height * .85)
+                    context.shadowColor="black";
+                    context.shadowBlur=10;
+                    context.lineWidth=8;
+                    var ctext = "HAPPY BIRTHDAY".split("").join(String.fromCharCode(8202))
+                    context.fillText(ctext, canvas.width / 2, canvas.height * .85)
+                    context.shadowBlur=0;
+                    context.fillStyle="white";
+                    context.fillText(ctext, canvas.width / 2, canvas.height * .85)
 
                     context.beginPath()
-                    context.arc(canvas.width/2, canvas.height/2 - 50, avatarHeight/2, 0, Math.PI * 2, true)
+                    context.arc(canvas.width/2, canvas.height/2 - 75, avatarHeight/2, 0, Math.PI * 2, true)
                     context.closePath()
                     context.clip()
 
                     guild.members.fetch(bday.userId)
                     .then((user) => {
                         Canvas.loadImage(user.displayAvatarURL({format: "jpg"})).then((avatar) => {
-                            context.drawImage(avatar, canvas.width/2 - avatarHeight/2, canvas.height/2 - avatarHeight/2 - 50, avatarHeight, avatarHeight)
+                            context.drawImage(avatar, canvas.width/2 - avatarHeight/2, canvas.height/2 - avatarHeight/2 - 75, avatarHeight, avatarHeight)
                             const attachment = new MessageAttachment(canvas.toBuffer(), "happybday.png")
                             const embed = new MessageEmbed()
                             .setColor("#0099ff")
