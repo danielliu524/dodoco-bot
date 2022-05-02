@@ -18,9 +18,9 @@ const run = async(client, interaction) => {
         (error, docs) => {
             if(error) {
                 console.log(error)
-                return interaction.reply("Failed to register birthday... <@374576776426553354> <:klee_sad:968364857839738880>")
+                return interaction.reply("Failed to register birthday... <:klee_sad:968364857839738880> <@374576776426553354>")
             }
-            return interaction.reply(`${docs.matchedCount ? "Updated" : "Registered"} <@${userId}>'s birthday! <:klee_hug:965992961173254145> <@374576776426553354>`)
+            return interaction.reply(`${docs.matchedCount ? "Updated" : "Registered"} <@${userId}>'s birthday! <:klee_hug:965992961173254145>`)
         }
     )
 }
