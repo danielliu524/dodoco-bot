@@ -59,7 +59,7 @@ client.on("interactionCreate", (interaction) => {
 const StartBirthdayJob = () => {
     today = new Date()
     console.log(today.toLocaleString())
-    const birthdayJob = new CronJob('27 6 * * *', () => {
+    const birthdayJob = new CronJob('32 1 * * *', () => {
         const date = new Date()
         let monthNow = date.getMonth() + 1
         let dayNow = date.getDate()
