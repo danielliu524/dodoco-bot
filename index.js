@@ -57,7 +57,7 @@ client.on("interactionCreate", (interaction) => {
 })
 
 const StartBirthdayJob = () => {
-    const birthdayJob = new CronJob('* * * * *', () => {
+    const birthdayJob = new CronJob('16 7 * * *', () => {
         console.log("running job...")
         const date = new Date()
         let monthNow = date.getMonth() + 1
