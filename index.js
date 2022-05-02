@@ -57,7 +57,7 @@ client.on("interactionCreate", (interaction) => {
 })
 
 const StartBirthdayJob = () => {
-    const birthdayJob = new CronJob('0 8 * * *', () => {
+    const birthdayJob = new CronJob('* * * * *', () => {
         const date = new Date()
         let monthNow = date.getMonth() + 1
         let dayNow = date.getDate()
@@ -109,8 +109,8 @@ const StartBirthdayJob = () => {
                             const attachment = new MessageAttachment(canvas.toBuffer(), "happybday.png")
                             const embed = new MessageEmbed()
                             .setColor(user.displayHexColor)
-                            .setTitle("🎂 HAPPY BIRTHDAY 🎂")
-                            .setDescription(`Happy birthday to <@${bday.userId}>!`)
+                            .setTitle("🎂 HAPPY BIRTHDAY 🎂 <:player:970064931770736681>")
+                            .setDescription(`Happy birthday to <@${bday.userId}>! <:player:970064931770736681>`)
                             .setImage("attachment://happybday.png")
                             announce.send({embeds: [embed], files: [attachment]})
                         })
