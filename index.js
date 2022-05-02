@@ -28,7 +28,7 @@ client.on("ready", () => {
     .then(() => {
         console.log(`Successfully loaded in ${client.slashcommands.size} command(s)`)
         console.log("Bot online")
-        client.user.setActivity("/help",
+        client.user.setActivity("/bday",
             {
                 type: "LISTENING"
             }
