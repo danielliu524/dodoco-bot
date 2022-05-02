@@ -91,7 +91,7 @@ const StartBirthdayJob = () => {
                     context.shadowColor="black";
                     context.shadowBlur=10;
                     context.lineWidth=8;
-                    var ctext = "HAPPY BIRTHDAY".split("").join(String.fromCharCode(8202))
+                    var ctext = "HAPPY BIRTHDAY"
                     context.fillText(ctext, canvas.width / 2, canvas.height * .85)
                     context.shadowBlur=0;
                     context.fillStyle="white";
