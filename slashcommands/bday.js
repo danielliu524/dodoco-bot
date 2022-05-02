@@ -4,7 +4,7 @@ const run = async(client, interaction) => {
     let month = interaction.options.getInteger("month")
     let day = interaction.options.getInteger("day")
     if(!validDate(day, month)) {
-        return interaction.reply("Please enter a valid date!")
+        return interaction.reply("Please enter a valid date! <:klee_sad:968364857839738880>")
     }
     let userId = interaction.user.id
     Bday.replaceOne(
@@ -18,9 +18,9 @@ const run = async(client, interaction) => {
         (error, docs) => {
             if(error) {
                 console.log(error)
-                return interaction.reply("Failed to register birthday...")
+                return interaction.reply("Failed to register birthday... <@374576776426553354> <:klee_sad:968364857839738880>")
             }
-            return interaction.reply(`${docs.matchedCount ? "Updated" : "Registered"} <@${userId}>'s birthday!`)
+            return interaction.reply(`${docs.matchedCount ? "Updated" : "Registered"} <@${userId}>'s birthday! <:klee_hug:965992961173254145> <@374576776426553354>`)
         }
     )
 }
