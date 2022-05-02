@@ -110,7 +110,7 @@ const StartBirthdayJob = () => {
                             const embed = new MessageEmbed()
                             .setColor(user.displayHexColor)
                             .setTitle("🎂 HAPPY BIRTHDAY 🎂")
-                            .setDescription(`Happy birthday to <@${bday.userId}>! <:klee_heart:965992961064177754>`)
+                            .setDescription(`Everyone wish <@${bday.userId}> a happy birthday! <:klee_heart:965992961064177754>`)
                             .setImage("attachment://happybday.png")
                             announce.send({embeds: [embed], files: [attachment]})
                         })
