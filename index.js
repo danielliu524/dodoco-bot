@@ -76,6 +76,7 @@ const StartBirthdayJob = () => {
                 return console.error("Target channel not found")
             }
             bdays.forEach((bday) => {
+                console.log("Sending a msg")
                 const canvasWidth = 850
                 const canvasHeight = 510
                 const avatarHeight = 230
