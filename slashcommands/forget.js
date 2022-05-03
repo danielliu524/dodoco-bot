@@ -21,7 +21,7 @@ const run = async(client, interaction) => {
 }
 
 module.exports = {
-    name: "remove",
+    name: "forget",
     description: "Dodoco forgets your birthday",
     options: [
     ],
