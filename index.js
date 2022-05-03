@@ -20,7 +20,7 @@ let bot = {client}
 
 client.on("ready", () => {
     console.log("Bot online")
-    client.user.setActivity("/bday",
+    client.user.setActivity("/help",
         {
             type: "LISTENING"
         }
