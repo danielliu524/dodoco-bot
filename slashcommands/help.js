@@ -7,7 +7,7 @@ const run = async(client, interaction) => {
     ]
     const embed = new MessageEmbed()
     .setColor("#fdf8c7")
-    .setTitle("ℹ️ Do#fff8c5doco Help")
+    .setTitle("ℹ️ Dodoco Help")
     .setDescription(helpArr.join("\n"))
     return interaction.reply({embeds: [embed]})
 }
