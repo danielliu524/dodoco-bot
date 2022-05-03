@@ -28,24 +28,32 @@ client.on("ready", () => {
     testGuild.commands.set([...client.slashcommands.values()])
     guild.commands.fetch()
     .then((commands) => {
-        guild.commands.delete([...commands.keys()])
-        .then(() => {
-            guild.commands.set([...client.slashcommands.values()])
+        var delCmd = 0
+        commands.forEach((item) => {
+            guild.commands.delete(item.id)
             .then(() => {
-                console.log(`Successfully loaded in ${client.slashcommands.size} command(s)`)
-                guild.commands.fetch().then((c) => {
-                    console.log(c)
-                })
-                console.log("Bot online")
-                client.user.setActivity("/bday",
-                    {
-                        type: "LISTENING"
-                    }
-                )
-                StartBirthdayJob()
+                delCmd++
+                if(delCmd === commands.size) {
+                    guild.commands.set([...client.slashcommands.values()])
+                    .then(() => {
+                        console.log(`Successfully loaded in ${client.slashcommands.size} command(s)`)
+                        guild.commands.fetch().then((c) => {
+                            console.log(c)
+                        })
+                        console.log("Bot online")
+                        client.user.setActivity("/bday",
+                            {
+                                type: "LISTENING"
+                            }
+                        )
+                        StartBirthdayJob()
+                    })
+                }
+            })
+            .catch((error) => {
+                console.log(error)
             })
         })
-        .catch((error) => {console.log(error)})
     })
 })
 
@@ -69,6 +77,7 @@ client.on("interactionCreate", (interaction) => {
 })
 
 const StartBirthdayJob = () => {
+    console.log("setting bday job...")
     const birthdayJob = new CronJob('1 0 * * *', () => {
         console.log("running job...")
         const date = new Date()
