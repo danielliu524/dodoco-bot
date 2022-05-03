@@ -24,6 +24,8 @@ client.on("ready", () => {
     if(!guild) {
         return console.error("Target guild not found")
     }
+    const testGuild = client.guilds.cache.get("776823126490087426")
+    testGuild.commands.set([...client.slashcommands.values()])
     guild.commands.set([...client.slashcommands.values()])
     .then(() => {
         console.log(`Successfully loaded in ${client.slashcommands.size} command(s)`)
