@@ -29,6 +29,10 @@ client.on("ready", () => {
     guild.commands.set([...client.slashcommands.values()])
     .then(() => {
         console.log(`Successfully loaded in ${client.slashcommands.size} command(s)`)
+
+        guild.commands.fetch().then((c) => {
+            console.log(c)
+        })
         console.log("Bot online")
         client.user.setActivity("/bday",
             {
