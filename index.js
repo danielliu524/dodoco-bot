@@ -26,20 +26,26 @@ client.on("ready", () => {
     }
     const testGuild = client.guilds.cache.get("776823126490087426")
     testGuild.commands.set([...client.slashcommands.values()])
-    guild.commands.set([...client.slashcommands.values()])
-    .then(() => {
-        console.log(`Successfully loaded in ${client.slashcommands.size} command(s)`)
-
-        guild.commands.fetch().then((c) => {
-            console.log(c)
+    guild.commands.fetch()
+    .then((commands) => {
+        guild.commands.delete([...commands.keys()])
+        .then(() => {
+            guild.commands.set([...client.slashcommands.values()])
+            .then(() => {
+                console.log(`Successfully loaded in ${client.slashcommands.size} command(s)`)
+                guild.commands.fetch().then((c) => {
+                    console.log(c)
+                })
+                console.log("Bot online")
+                client.user.setActivity("/bday",
+                    {
+                        type: "LISTENING"
+                    }
+                )
+                StartBirthdayJob()
+            })
         })
-        console.log("Bot online")
-        client.user.setActivity("/bday",
-            {
-                type: "LISTENING"
-            }
-        )
-        StartBirthdayJob()
+        .catch((error) => {console.log(error)})
     })
 })
 
