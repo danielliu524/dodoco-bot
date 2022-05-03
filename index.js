@@ -24,7 +24,7 @@ client.on("ready", () => {
     if(!guild) {
         return console.error("Target guild not found")
     }
-    const testGuild = client.guilds.cache.get("776823126490087426")
+    const testGuild = client.guilds.cache.get("740128488622915595")
     testGuild.commands.set([...client.slashcommands.values()])
     guild.commands.fetch()
     .then((commands) => {
@@ -60,7 +60,7 @@ client.on("ready", () => {
 client.slashcommands = new Collection()
 
 client.loadSlashCommands = (bot, reload) => require("./handlers/slashcommands")(bot, reload)
-client.loadSlashCommands(bot, true)
+client.loadSlashCommands(bot, false)
 
 client.on("interactionCreate", (interaction) => {
     if(!interaction.isCommand()) return
