@@ -54,7 +54,7 @@ const validDate = (day, month) => {
 
 module.exports = {
     name: "bday",
-    description: "Have Dodoco remind everyone when it's your birthday!",
+    description: "Have Dodoco remind everyone when it's your birthday! ",
     options: [
         {
             name: "month",
