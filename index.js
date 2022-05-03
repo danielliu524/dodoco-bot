@@ -19,42 +19,13 @@ const client = new Client({
 let bot = {client}
 
 client.on("ready", () => {
-    const guild = client.guilds.cache.get(guildId)
-    console.log("Loading slash commands...")
-    if(!guild) {
-        return console.error("Target guild not found")
-    }
-    const testGuild = client.guilds.cache.get("740128488622915595")
-    testGuild.commands.set([...client.slashcommands.values()])
-    guild.commands.fetch()
-    .then((commands) => {
-        var delCmd = 0
-        commands.forEach((item) => {
-            guild.commands.delete(item.id)
-            .then(() => {
-                delCmd++
-                if(delCmd === commands.size) {
-                    guild.commands.set([...client.slashcommands.values()])
-                    .then(() => {
-                        console.log(`Successfully loaded in ${client.slashcommands.size} command(s)`)
-                        guild.commands.fetch().then((c) => {
-                            console.log(c)
-                        })
-                        console.log("Bot online")
-                        client.user.setActivity("/bday",
-                            {
-                                type: "LISTENING"
-                            }
-                        )
-                        StartBirthdayJob()
-                    })
-                }
-            })
-            .catch((error) => {
-                console.log(error)
-            })
-        })
-    })
+    console.log("Bot online")
+    client.user.setActivity("/bday",
+        {
+            type: "LISTENING"
+        }
+    )
+    StartBirthdayJob()
 })
 
 client.slashcommands = new Collection()

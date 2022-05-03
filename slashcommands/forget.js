@@ -22,7 +22,7 @@ const run = async(client, interaction) => {
 
 module.exports = {
     name: "forget",
-    description: "Dodoco forgets your birthday ",
+    description: "Dodoco forgets your birthday",
     options: [
     ],
     run
