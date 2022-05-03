@@ -42,7 +42,7 @@ client.on("ready", () => {
 client.slashcommands = new Collection()
 
 client.loadSlashCommands = (bot, reload) => require("./handlers/slashcommands")(bot, reload)
-client.loadSlashCommands(bot, false)
+client.loadSlashCommands(bot, true)
 
 client.on("interactionCreate", (interaction) => {
     if(!interaction.isCommand()) return
