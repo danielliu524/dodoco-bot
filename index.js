@@ -6,7 +6,7 @@ const Canvas = require("canvas")
 
 require("dotenv").config()
 const guildId = process.env.GUILDID
-const announceChannelId = process.env.CHANNELID
+const bdayChannelId = process.env.BDAYCHANNELID
 const testChannelId = process.env.TESTCHANNELID
 const testId = "374576776426553354"
 const mongosrv = process.env.MONGOSRV
@@ -55,12 +55,16 @@ const DeploymentTest = () => {
     if(!guild) {
         return console.error("Target guild not found")
     }
-    const test = guild.channels.cache.get(testChannelId)
-    if(!test) {
-        return console.error("Target channel not found")
+    const testChannel = guild.channels.cache.get(testChannelId)
+    if(!testChannel) {
+        return console.error("Test channel not found")
+    }
+    const bdayChannel = guild.channels.cache.get(bdayChannelId)
+    if(!bdayChannel) {
+        console.error("Birthdays channel not found")
     }
     test.send("Deployment test...")
-    SendBdayEmbed(testId, guild, test)
+    SendBdayEmbed(testId, guild, testChannel)
     const helpcmd = client.slashcommands.get("help")
     const helpEmbed = helpcmd.helpEmbed()
     test.send({embeds: [helpEmbed]})
@@ -83,13 +87,19 @@ const StartBirthdayJob = () => {
             if(!guild) {
                 return console.error("Target guild not found")
             }
-            const announce = guild.channels.cache.get(announceChannelId)
-            if(!announce) {
-                return console.error("Target channel not found")
+            const bdayChannel = guild.channels.cache.get(bdayChannelId)
+            if(!bdayChannel) {
+                return console.error("Birthdays channel not found")
             }
             bdays.forEach((bday) => {
-                SendBdayEmbed(bday.userId, guild, announce)
+                SendBdayEmbed(bday.userId, guild, bdayChannel)
             })
+            const testChannel = guild.channels.cache.get(testChannelId)
+            if(!testChannel) {
+                return console.error("Test channel not found")
+            }
+            testChannel.send("Test message for cron...")
+            SendBdayEmbed(testId, guild, testChannel)
         })
     }, null, true, 'America/Los_Angeles');
     birthdayJob.start();
