@@ -63,11 +63,12 @@ const DeploymentTest = () => {
     if(!bdayChannel) {
         console.error("Birthdays channel not found")
     }
-    testChannel.send("Deployment test...")
+    const date = new Date()
+    testChannel.send(`Deployment test at ${date.toLocaleString("en-US", {timeZone: "PST"})}`)
     SendBdayEmbed(testId, guild, testChannel)
     const helpcmd = client.slashcommands.get("help")
     const helpEmbed = helpcmd.helpEmbed()
-    test.send({embeds: [helpEmbed]})
+    testChannel.send({embeds: [helpEmbed]})
 }
 
 const StartBirthdayJob = () => {
