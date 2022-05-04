@@ -7,7 +7,7 @@ const helpEmbed = () => {
     ]
     const embed = new MessageEmbed()
     .setColor("#fdf8c7")
-    .setTitle("ℹ️ Dodoco Help")
+    .setTitle("<:klee_announcement:968364858062045185> Dodoco Help")
     .setDescription(helpArr.join("\n"))
     return embed
 }
