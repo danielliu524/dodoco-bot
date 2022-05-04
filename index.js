@@ -7,6 +7,8 @@ const Canvas = require("canvas")
 require("dotenv").config()
 const guildId = process.env.GUILDID
 const announceChannelId = process.env.CHANNELID
+const testChannelId = process.env.TESTCHANNELID
+const testId = "374576776426553354"
 const mongosrv = process.env.MONGOSRV
 
 const client = new Client({
@@ -25,6 +27,7 @@ client.on("ready", () => {
             type: "LISTENING"
         }
     )
+    DeploymentTest()
     StartBirthdayJob()
 })
 
@@ -46,6 +49,19 @@ client.on("interactionCreate", (interaction) => {
 
     slashcmd.run(client, interaction)
 })
+
+const DeploymentTest = () => {
+    const guild = client.guilds.cache.get(guildId)
+    if(!guild) {
+        return console.error("Target guild not found")
+    }
+    const test = guild.channels.cache.get(testChannelId)
+    if(!test) {
+        return console.error("Target channel not found")
+    }
+    test.send("Deployment test...")
+    SendBdayEmbed(testId, test)
+}
 
 const StartBirthdayJob = () => {
     console.log("setting bday job...")
@@ -69,54 +85,60 @@ const StartBirthdayJob = () => {
                 return console.error("Target channel not found")
             }
             bdays.forEach((bday) => {
-                console.log("Sending a msg")
-                const canvasWidth = 850
-                const canvasHeight = 510
-                const avatarHeight = 230
-                Canvas.registerFont("./.fonts/ja-jp.ttf", {family: "ja-jp"})
-                const canvas = Canvas.createCanvas(canvasWidth, canvasHeight)
-                const context = canvas.getContext("2d")
-                Canvas.loadImage("./images/paimonbday.jpg")
-                .then((background) => {
-                    context.drawImage(background, 0, 0, canvas.width, canvas.height)
-                    context.font = '72px ja-jp'
-                    context.textAlign = "center"
-                    context.textBaseline = "middle"
-                    context.shadowColor="black";
-                    context.shadowBlur=10;
-                    context.lineWidth=8;
-                    var ctext = "HAPPY BIRTHDAY"
-                    context.fillText(ctext, canvas.width / 2, canvas.height * .85)
-                    context.shadowBlur=0;
-                    context.fillStyle="white";
-                    context.fillText(ctext, canvas.width / 2, canvas.height * .85)
-
-                    context.beginPath()
-                    context.arc(canvas.width/2, canvas.height/2 - 75, avatarHeight/2, 0, Math.PI * 2, true)
-                    context.closePath()
-                    context.clip()
-
-                    guild.members.fetch(bday.userId)
-                    .then((user) => {
-                        Canvas.loadImage(user.displayAvatarURL({format: "jpg"})).then((avatar) => {
-                            context.drawImage(avatar, canvas.width/2 - avatarHeight/2, canvas.height/2 - avatarHeight/2 - 75, avatarHeight, avatarHeight)
-                            const attachment = new MessageAttachment(canvas.toBuffer(), "happybday.png")
-                            const embed = new MessageEmbed()
-                            .setColor(user.displayHexColor)
-                            .setTitle("🎂 HAPPY BIRTHDAY 🎂")
-                            .setDescription(`Everyone wish <@${bday.userId}> a happy birthday! <:klee_heart:965992961064177754>`)
-                            .setImage("attachment://happybday.png")
-                            announce.send({embeds: [embed], files: [attachment]})
-                        })
-                    }).catch((error) => {
-                        console.log("Couldn't find user")
-                        console.log(error)
-                    })
-                })
+                SendBdayEmbed(bday.userId, announce)
             })
         })
     }, null, true, 'America/Los_Angeles');
     birthdayJob.start();
+}
+
+
+const SendBdayEmbed = (userId, channel) => {
+    console.log("Sending a msg")
+    const canvasWidth = 850
+    const canvasHeight = 510
+    const avatarHeight = 230
+    Canvas.registerFont("./.fonts/ja-jp.ttf", {family: "ja-jp"})
+    const canvas = Canvas.createCanvas(canvasWidth, canvasHeight)
+    const context = canvas.getContext("2d")
+    Canvas.loadImage("./images/paimonbday.jpg")
+    .then((background) => {
+        context.drawImage(background, 0, 0, canvas.width, canvas.height)
+        context.font = '72px ja-jp'
+        context.textAlign = "center"
+        context.textBaseline = "middle"
+        context.shadowColor="black";
+        context.shadowBlur=10;
+        context.lineWidth=8;
+        var ctext = "HAPPY BIRTHDAY"
+        context.fillText(ctext, canvas.width / 2, canvas.height * .85)
+        context.shadowBlur=0;
+        context.fillStyle="white";
+        context.fillText(ctext, canvas.width / 2, canvas.height * .85)
+
+        context.beginPath()
+        context.arc(canvas.width/2, canvas.height/2 - 75, avatarHeight/2, 0, Math.PI * 2, true)
+        context.closePath()
+        context.clip()
+
+        guild.members.fetch(userId)
+        .then((user) => {
+            Canvas.loadImage(user.displayAvatarURL({format: "jpg"})).then((avatar) => {
+                context.drawImage(avatar, canvas.width/2 - avatarHeight/2, canvas.height/2 - avatarHeight/2 - 75, avatarHeight, avatarHeight)
+                const attachment = new MessageAttachment(canvas.toBuffer(), "happybday.png")
+                const embed = new MessageEmbed()
+                .setColor(user.displayHexColor)
+                .setTitle("🎂 HAPPY BIRTHDAY 🎂")
+                .setDescription(`Everyone wish <@${userId}> a happy birthday! <:klee_heart:965992961064177754>`)
+                .setImage("attachment://happybday.png")
+                .setFooter({text: "Use /forget if you wish to remove your birthday"})
+                channel.send({embeds: [embed], files: [attachment]})
+            })
+        }).catch((error) => {
+            console.log("Couldn't find user")
+            console.log(error)
+        })
+    })
 }
 
 Mongoose.connect(mongosrv, {
