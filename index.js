@@ -8,7 +8,7 @@ require("dotenv").config()
 const guildId = process.env.GUILDID
 const bdayChannelId = process.env.BDAYCHANNELID
 const testChannelId = process.env.TESTCHANNELID
-const testId = "374576776426553354"
+const testUserId = process.env.TESTUSERID
 const mongosrv = process.env.MONGOSRV
 
 const client = new Client({
@@ -65,7 +65,7 @@ const DeploymentTest = () => {
     }
     const date = new Date()
     testChannel.send(`Deployment test at ${date.toLocaleString("en-US", {timeZone: "PST"})}`)
-    SendBdayEmbed(testId, guild, testChannel)
+    SendBdayEmbed(testUserId, guild, testChannel)
     const helpcmd = client.slashcommands.get("help")
     const helpEmbed = helpcmd.helpEmbed()
     testChannel.send({embeds: [helpEmbed]})
@@ -100,7 +100,7 @@ const StartBirthdayJob = () => {
                 return console.error("Test channel not found")
             }
             testChannel.send("Test message for cron...")
-            SendBdayEmbed(testId, guild, testChannel)
+            SendBdayEmbed(testUserId, guild, testChannel)
         })
     }, null, true, 'America/Los_Angeles');
     birthdayJob.start();
