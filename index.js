@@ -60,7 +60,11 @@ const DeploymentTest = () => {
         return console.error("Target channel not found")
     }
     test.send("Deployment test...")
-    SendBdayEmbed(testId, guild, test)
+    SendBdayEmbed(testId, guild, test).then(() => {
+        const helpcmd = client.slashcommands.get("help")
+        const helpEmbed = helpcmd.helpEmbed()
+        test.send({embeds: [helpEmbed]})
+    })
 }
 
 const StartBirthdayJob = () => {

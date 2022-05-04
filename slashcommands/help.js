@@ -1,6 +1,6 @@
 const {MessageEmbed} = require("discord.js")
 
-const run = async(client, interaction) => {
+const helpEmbed = () => {
     const helpArr = [
         "`/bday` - Register/update your birthday",
         "`/forget` - Remove your birthday"
@@ -9,6 +9,11 @@ const run = async(client, interaction) => {
     .setColor("#fdf8c7")
     .setTitle("ℹ️ Dodoco Help")
     .setDescription(helpArr.join("\n"))
+    return embed
+}
+
+const run = async(client, interaction) => {
+    const embed = helpEmbed()
     return interaction.reply({embeds: [embed]})
 }
 
@@ -17,5 +22,6 @@ module.exports = {
     description: "Show what Dodoco can do",
     options: [
     ],
-    run
+    run,
+    helpEmbed
 }
