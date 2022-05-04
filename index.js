@@ -60,7 +60,7 @@ const DeploymentTest = () => {
         return console.error("Target channel not found")
     }
     test.send("Deployment test...")
-    SendBdayEmbed(testId, test)
+    SendBdayEmbed(testId, guild, test)
 }
 
 const StartBirthdayJob = () => {
@@ -85,7 +85,7 @@ const StartBirthdayJob = () => {
                 return console.error("Target channel not found")
             }
             bdays.forEach((bday) => {
-                SendBdayEmbed(bday.userId, announce)
+                SendBdayEmbed(bday.userId, guild, announce)
             })
         })
     }, null, true, 'America/Los_Angeles');
@@ -93,8 +93,8 @@ const StartBirthdayJob = () => {
 }
 
 
-const SendBdayEmbed = (userId, channel) => {
-    console.log("Sending a msg")
+const SendBdayEmbed = (userId, guild, channel) => {
+    console.log("Sending a BdayEmbed...")
     const canvasWidth = 850
     const canvasHeight = 510
     const avatarHeight = 230
