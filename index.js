@@ -287,7 +287,7 @@ const SendWelcomeEmbed = (userId, guild, channel) => {
         context.shadowColor="black";
         context.shadowBlur=10;
         context.lineWidth=8;
-        let topText = "Welcome To"
+        let topText = "Welcome to"
         context.fillText(topText, canvas.width / 2, canvas.height * .15)
         context.shadowBlur=0;
         context.fillStyle="white";
