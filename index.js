@@ -274,7 +274,7 @@ const SendWelcomeEmbed = (userId, guild, channel) => {
     const context = canvas.getContext("2d")
     Canvas.loadImage("./images/genshinwelcome.jpg")
     .then((background) => {
-        context.globalAlpha = 0.5
+        context.globalAlpha = 0.75
         context.drawImage(background, 0, 0, canvas.width, canvas.height)
         context.globalAlpha = 1.0
         context.font = '64px ja-jp'
