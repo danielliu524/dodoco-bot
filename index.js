@@ -7,6 +7,7 @@ const Canvas = require("canvas")
 require("dotenv").config()
 const guildId = process.env.GUILDID
 const bdayChannelId = process.env.BDAYCHANNELID
+const welcomeChannelId = process.env.WELCOMECHANNELID
 const testChannelId = process.env.TESTCHANNELID
 const testUserId = process.env.TESTUSERID
 const mongosrv = process.env.MONGOSRV
@@ -35,12 +36,12 @@ client.on("ready", () => {
 client.on("guildMemberAdd", (member) => {
     console.log("Added member")
     console.log(member.guild.id)
-    if(member.guild.id === "776823126490087426") {
-        const guild = client.guilds.cache.get("776823126490087426")
+    if(member.guild.id === guildId) {
+        const guild = client.guilds.cache.get(guildId)
         if(!guild) {
             return console.error("Target guild not found")
         }
-        const welcomeChannel = guild.channels.cache.get("916438949612883998")
+        const welcomeChannel = guild.channels.cache.get(welcomeChannelId)
         if(!welcomeChannel) {
             return console.error("Welcome channel not found")
         }
@@ -274,7 +275,7 @@ const SendWelcomeEmbed = (userId, guild, channel) => {
     const context = canvas.getContext("2d")
     Canvas.loadImage("./images/genshinwelcome.jpg")
     .then((background) => {
-        context.globalAlpha = 0.75
+        context.globalAlpha = 0.9
         context.drawImage(background, 0, 0, canvas.width, canvas.height)
         context.globalAlpha = 1.0
         context.font = '64px ja-jp'
