@@ -32,6 +32,7 @@ client.on("ready", () => {
     )
     DeploymentTest()
     StartBirthdayJob()
+    StartEventJob()
 })
 
 client.on("guildMemberAdd", (member) => {
@@ -183,7 +184,7 @@ const StartBirthdayJob = () => {
 
 const StartEventJob = () => {
     console.log("setting event job...")
-    const eventJob = new CronJob('15 * * * *', () => {
+    const eventJob = new CronJob('16 * * * *', () => {
         console.log("running event job...")
         const guild = client.guilds.cache.get(guildId)
         if(!guild) {
