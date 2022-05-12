@@ -30,7 +30,7 @@ client.on("ready", () => {
     )
     DeploymentTest()
     StartBirthdayJob()
-    // StartEventJob()
+    StartEventJob()
 })
 
 client.on("guildMemberAdd", (member) => {
@@ -93,7 +93,7 @@ const DeploymentTest = () => {
 const StartBirthdayJob = () => {
     console.log("setting bday job...")
     const birthdayJob = new CronJob('1 0 * * *', () => {
-        console.log("running job...")
+        console.log("running bday job...")
         const date = new Date()
         let monthNow = date.getMonth() + 1
         let dayNow = date.getDate()
@@ -126,92 +126,42 @@ const StartBirthdayJob = () => {
 }
 
 const StartEventJob = () => {
-    // Every hour check database for events that have passed for at least 1 day, delete them
-    // Every hour check database 
-    const guild = client.guilds.cache.get("776823126490087426")
-    if(!guild) {
-        return console.error("Target guild not found")
-    }
-    const everyoneRole = guild.roles.everyone
-    const rolesCache = guild.roles.cache
-    const eventsCache = guild.scheduledEvents.cache
-    const channelsCache = guild.channels.cache
-    const category = channelsCache.find(channel => (channel.id === "776823126490087427"))
-    if(!category) {
-        return console.error("Category not found")
-    }
-    eventsCache.forEach((event) => {
-        const channelName = event.name.replace(/\s+/g, '-').toLowerCase();
-        const eventRole = rolesCache.find(role => role.name === event.name)
-        // If no role for event, create role
-        if(!eventRole) {
-            guild.roles.create({"name": event.name}).then((role) => {
-                const eventChannel = channelsCache.find(channel => channel.name === channelName)
-                // If no channel for event, create channel
-                if(!eventChannel) {
-                    guild.channels.create(channelName, {
-                        topic: `Channel created for the ${event.name} event`,
-                        permissionOverwrites: [
-                            {
-                                id: role.id,
-                                allow: [
-                                    Permissions.FLAGS.VIEW_CHANNEL, Permissions.FLAGS.SEND_MESSAGES
-                                ]
-                            },
-                            {
-                                id: everyoneRole.id,
-                                deny: [
-                                    Permissions.FLAGS.VIEW_CHANNEL
-                                ]
-                            }
-                        ]
-                    }).then((channel) => {
-                        channel.setParent(category.id, {lockPermissions: false}).then(() => {
-                            channel.setPosition(0)
-                        })
-                    })
-                }
-                // If channel already exists, set appropriate permissions
-                else {
-                    console.log(eventChannel)
-                }
-            }).catch((error) => {console.error(error)})
+    console.log("setting event job...")
+    const eventJob = new CronJob('5 * * * *', () => {
+        console.log("running event job...")
+        const guild = client.guilds.cache.get(guildId)
+        if(!guild) {
+            return console.error("Target guild not found")
         }
-        // There exists role for this event already
-        else {
-            const eventChannel = channelsCache.find(channel => channel.name === channelName)
-            // If no channel for event, create channel
-            if(!eventChannel) {
-                guild.channels.create(channelName, {
-                    topic: `Channel created for the ${event.name} event`,
-                    permissionOverwrites: [
-                        {
-                            id: eventRole.id,
-                            allow: [
-                                Permissions.FLAGS.VIEW_CHANNEL, Permissions.FLAGS.SEND_MESSAGES
-                            ]
-                        },
-                        {
-                            id: everyoneRole.id,
-                            deny: [
-                                Permissions.FLAGS.VIEW_CHANNEL
-                            ]
-                        }
-                    ]
-                }).then((channel) => {
-                    channel.setParent(category.id, {lockPermissions: false}).then(() => {
-                        channel.setPosition(0)
-                    })
+        const eventsCache = guild.scheduledEvents.cache
+        const rolesCache = guild.roles.cache
+        eventsCache.forEach((event) => {
+            const eventRole = rolesCache.find(role => role.name === event.name)
+            if(!eventRole) {
+                guild.roles.create({name: event.name}).then((role) => {
+                    AddSubscribersToRole(guild, event, role)
                 })
             }
             else {
-                console.log(eventChannel)
+                event.fetchSubscribers().then((subscribers) => {
+                    eventRole.members.forEach((member) => {
+                        if(!(subscribers.has(member.id))) {
+                            member.roles.remove(eventRole)
+                        }
+                    })
+                    AddSubscribersToRole(guild, event, eventRole)
+                })
             }
-        }
-        event.fetchSubscribers().then((subscribers) => {
-            subscribers.forEach((subscriber) => {
-                const subscriberId = subscriber.user.id
-                console.log(subscriberId)
+        })
+    }, null, true, "America/Los_Angeles");
+    eventJob.start();
+}
+
+const AddSubscribersToRole = (guild, event, role) => {
+    event.fetchSubscribers().then((subscribers) => {
+        subscribers.forEach((subscriber) => {
+            guild.members.fetch(subscriber.user.id).then((member) => {
+                member.roles.add(role)
             })
         })
     })
