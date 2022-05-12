@@ -3,6 +3,7 @@ const Mongoose = require("mongoose")
 const CronJob = require("cron").CronJob
 const Bday = require("./models/Bday")
 const Canvas = require("canvas")
+const { collection } = require("./models/Bday")
 
 require("dotenv").config()
 const guildId = process.env.GUILDID
@@ -15,7 +16,8 @@ const mongosrv = process.env.MONGOSRV
 const client = new Client({
     intents: [
         "GUILDS",
-        "GUILD_MEMBERS"
+        "GUILD_MEMBERS",
+        "GUILD_SCHEDULED_EVENTS"
     ]
 })
 
@@ -30,7 +32,6 @@ client.on("ready", () => {
     )
     DeploymentTest()
     StartBirthdayJob()
-    StartEventJob()
 })
 
 client.on("guildMemberAdd", (member) => {
@@ -46,6 +47,57 @@ client.on("guildMemberAdd", (member) => {
             return console.error("Welcome channel not found")
         }
         SendWelcomeEmbed(member.id, guild, welcomeChannel)
+    }
+})
+
+client.on("guildScheduledEventCreate", (event) => {
+    console.log("Created event")
+    if(event.guild.id === guildId) {
+        const guild = client.guilds.cache.get(guildId)
+        if(!guild) {
+            return console.error("Target guild not found")
+        }
+        guild.roles.create({name: event.name})
+    }
+})
+
+client.on("guildScheduledEventUserAdd", (event, user) => {
+    console.log("User added to event")
+    if(event.guild.id === guildId) {
+        const guild = client.guilds.cache.get(guildId)
+        if(!guild) {
+            return console.error("Target guild not found")
+        }
+        const eventRole = guild.roles.cache.find(role => role.name === event.name)
+        if(!eventRole) {
+            return console.error("Event role not found")
+        }
+        guild.members.fetch(user.id).then((member) => {
+            member.roles.add(eventRole)
+            logsChannel.send(`Added role ${eventRole.name} to ${member.nickname}`)
+        })
+    }
+})
+
+client.on("guildScheduledEventUserRemove", (event, user) => {
+    console.log("User removed from event")
+    if(event.guild.id === guildId) {
+        const guild = client.guilds.cache.get(guildId)
+        if(!guild) {
+            return console.error("Target guild not found")
+        }
+        const logsChannel = guild.channels.cache.get("903529627945951262")
+        if(!logsChannel) {
+            return console.error("Logs channel not found")
+        }
+        const eventRole = guild.roles.cache.find(role => role.name === event.name)
+        if(!eventRole) {
+            return console.error("Event role not found")
+        }
+        guild.members.fetch(user.id).then((member) => {
+            member.roles.remove(eventRole)
+            logsChannel.send(`Removed role ${eventRole.name} from ${member.nickname}`)
+        })
     }
 })
 
@@ -123,48 +175,6 @@ const StartBirthdayJob = () => {
         })
     }, null, true, "America/Los_Angeles");
     birthdayJob.start();
-}
-
-const StartEventJob = () => {
-    console.log("setting event job...")
-    const eventJob = new CronJob('5 * * * *', () => {
-        console.log("running event job...")
-        const guild = client.guilds.cache.get(guildId)
-        if(!guild) {
-            return console.error("Target guild not found")
-        }
-        const eventsCache = guild.scheduledEvents.cache
-        const rolesCache = guild.roles.cache
-        eventsCache.forEach((event) => {
-            const eventRole = rolesCache.find(role => role.name === event.name)
-            if(!eventRole) {
-                guild.roles.create({name: event.name}).then((role) => {
-                    AddSubscribersToRole(guild, event, role)
-                })
-            }
-            else {
-                event.fetchSubscribers().then((subscribers) => {
-                    eventRole.members.forEach((member) => {
-                        if(!(subscribers.has(member.id))) {
-                            member.roles.remove(eventRole)
-                        }
-                    })
-                    AddSubscribersToRole(guild, event, eventRole)
-                })
-            }
-        })
-    }, null, true, "America/Los_Angeles");
-    eventJob.start();
-}
-
-const AddSubscribersToRole = (guild, event, role) => {
-    event.fetchSubscribers().then((subscribers) => {
-        subscribers.forEach((subscriber) => {
-            guild.members.fetch(subscriber.user.id).then((member) => {
-                member.roles.add(role)
-            })
-        })
-    })
 }
 
 const SendBdayEmbed = (userId, guild, channel) => {
