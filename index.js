@@ -181,6 +181,41 @@ const StartBirthdayJob = () => {
     birthdayJob.start();
 }
 
+const StartEventJob = () => {
+    console.log("setting event job...")
+    const eventJob = new CronJob('15 * * * *', () => {
+        console.log("running event job...")
+        const guild = client.guilds.cache.get(guildId)
+        if(!guild) {
+            return console.error("Target guild not found")
+        }
+        const eventsCache = guild.scheduledEvents.cache
+        const rolesCache = guild.roles.cache
+        eventsCache.forEach((event) => {
+            const eventRole = rolesCache.find(role => role.name === event.name)
+            if(!eventRole) {
+                guild.roles.create({name: event.name}).then((role) => {
+                    AddSubscribersToRole(guild, event, role)
+                })
+            }
+            else {
+                AddSubscribersToRole(guild, event, eventRole)
+            }
+        })
+    }, null, true, "America/Los_Angeles");
+    eventJob.start();
+}
+
+const AddSubscribersToRole = (guild, event, role) => {
+    event.fetchSubscribers().then((subscribers) => {
+        subscribers.forEach((subscriber) => {
+            guild.members.fetch(subscriber.user.id).then((member) => {
+                member.roles.add(role)
+            })
+        })
+    })
+}
+
 const SendBdayEmbed = (userId, guild, channel) => {
     console.log("Sending a BdayEmbed...")
     const canvasWidth = 850
