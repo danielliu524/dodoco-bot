@@ -79,7 +79,7 @@ client.on("guildScheduledEventUserAdd", (event, user) => {
         }
         guild.members.fetch(user.id).then((member) => {
             member.roles.add(eventRole)
-            logsChannel.send(`Added role ${eventRole.name} to ${member.nickname}`)
+            logsChannel.send(`Added role ${eventRole.name} to <@${user.id}>`)
         })
     }
 })
@@ -101,7 +101,7 @@ client.on("guildScheduledEventUserRemove", (event, user) => {
         }
         guild.members.fetch(user.id).then((member) => {
             member.roles.remove(eventRole)
-            logsChannel.send(`Removed role ${eventRole.name} from ${member.nickname}`)
+            logsChannel.send(`Removed role ${eventRole.name} from <@${user.id}>`)
         })
     }
 })
