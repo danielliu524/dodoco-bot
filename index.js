@@ -9,6 +9,7 @@ require("dotenv").config()
 const guildId = process.env.GUILDID
 const bdayChannelId = process.env.BDAYCHANNELID
 const welcomeChannelId = process.env.WELCOMECHANNELID
+const logsChannelId = process.env.LOGSCHANNELID
 const testChannelId = process.env.TESTCHANNELID
 const testUserId = process.env.TESTUSERID
 const mongosrv = process.env.MONGOSRV
@@ -69,7 +70,7 @@ client.on("guildScheduledEventUserAdd", (event, user) => {
         if(!guild) {
             return console.error("Target guild not found")
         }
-        const logsChannel = guild.channels.cache.get("903529627945951262")
+        const logsChannel = guild.channels.cache.get(logsChannelId)
         if(!logsChannel) {
             return console.error("Logs channel not found")
         }
@@ -91,7 +92,7 @@ client.on("guildScheduledEventUserRemove", (event, user) => {
         if(!guild) {
             return console.error("Target guild not found")
         }
-        const logsChannel = guild.channels.cache.get("903529627945951262")
+        const logsChannel = guild.channels.cache.get(logsChannelId)
         if(!logsChannel) {
             return console.error("Logs channel not found")
         }
