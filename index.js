@@ -185,7 +185,7 @@ const StartBirthdayJob = () => {
 
 const StartEventJob = () => {
     console.log("setting event job...")
-    const eventJob = new CronJob('22 * * * *', () => {
+    const eventJob = new CronJob('24 * * * *', () => {
         console.log("running event job...")
         const guild = client.guilds.cache.get(guildId)
         if(!guild) {
