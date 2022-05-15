@@ -185,7 +185,7 @@ const StartBirthdayJob = () => {
 
 const StartEventJob = () => {
     console.log("setting event job...")
-    const eventJob = new CronJob('16 * * * *', () => {
+    const eventJob = new CronJob('22 * * * *', () => {
         console.log("running event job...")
         const guild = client.guilds.cache.get(guildId)
         if(!guild) {
@@ -195,13 +195,15 @@ const StartEventJob = () => {
         const rolesCache = guild.roles.cache
         eventsCache.forEach((event) => {
             const eventRole = rolesCache.find(role => role.name === event.name)
-            if(!eventRole) {
-                guild.roles.create({name: event.name}).then((role) => {
-                    AddSubscribersToRole(guild, event, role)
-                })
-            }
-            else {
-                AddSubscribersToRole(guild, event, eventRole)
+            if(event.isScheduled()) {
+                if(!eventRole) {
+                    guild.roles.create({name: event.name}).then((role) => {
+                        AddSubscribersToRole(guild, event, role)
+                    })
+                }
+                else {
+                    AddSubscribersToRole(guild, event, eventRole)
+                }
             }
         })
     }, null, true, "America/Los_Angeles");
