@@ -1,9 +1,9 @@
-const {Client, Collection, MessageAttachment, MessageEmbed, Permissions} = require("discord.js")
+const {Client, Collection, MessageAttachment, MessageEmbed} = require("discord.js")
 const Mongoose = require("mongoose")
 const CronJob = require("cron").CronJob
 const Bday = require("./models/Bday")
+const Event = require("./models/Event")
 const Canvas = require("canvas")
-const { collection } = require("./models/Bday")
 
 require("dotenv").config()
 const guildId = process.env.GUILDID
@@ -34,6 +34,8 @@ client.on("ready", () => {
     DeploymentTest()
     StartBirthdayJob()
     StartEventJob()
+    StartUpdateEventJob()
+    StartWarningEventJob()
 })
 
 client.on("guildMemberAdd", (member) => {
@@ -60,6 +62,8 @@ client.on("guildScheduledEventCreate", (event) => {
             return console.error("Target guild not found")
         }
         guild.roles.create({name: event.name})
+        let newEvent = new Event({eventId: event.id, startTime: event.scheduledStartTimestamp})
+        newEvent.save()
     }
 })
 
@@ -143,6 +147,10 @@ const DeploymentTest = () => {
     testChannel.send(`Deployment test at ${date.toLocaleString("en-US", {timeZone: "PST"})}`)
     SendBdayEmbed(testUserId, guild, testChannel)
     SendWelcomeEmbed(testUserId, guild, testChannel)
+    const bdayscmd = client.slashcommands.get("bdays")
+    bdayscmd.bdaysEmbed(date.getMonth() + 1).then((bdaysEmbed) => {
+        testChannel.send({embeds: [bdaysEmbed]})
+    })
     const helpcmd = client.slashcommands.get("help")
     const helpEmbed = helpcmd.helpEmbed()
     testChannel.send({embeds: [helpEmbed]})
@@ -208,6 +216,72 @@ const StartEventJob = () => {
         })
     }, null, true, "America/Los_Angeles");
     eventJob.start();
+}
+
+const StartUpdateEventJob = () => {
+    console.log("setting update event job...")
+    const updateEventJob = new CronJob('0 2 * * *', () => {
+        console.log("running update event job...")
+        const guild = client.guilds.cache.get(guildId)
+        if(!guild) {
+            return console.error("Target guild not found")
+        }
+        const eventsCache = guild.scheduledEvents.cache
+        eventsCache.forEach((event) => {
+            Event.replaceOne(
+                { eventId: {$eq: event.id} },
+                {
+                    eventId: event.id,
+                    startTime: event.scheduledStartTimestamp,
+                    name: event.name.toLowerCase().replace(/\s/g, '')
+                },
+                { upsert: true },
+                (error, docs) => {
+                    if(error) {
+                        console.log(error)
+                    }
+                    else {
+                        console.log(docs)
+                    }
+                }
+            )
+        })
+    }, null, true, "America/Los_Angeles");
+    updateEventJob.start();
+}
+
+const StartWarningEventJob = () => {
+    console.log("setting warning event job...")
+    const warningEventJob = new CronJob('1 18 * * *', () => {
+        console.log("running warning event job...")
+        const guild = client.guilds.cache.get(guildId)
+        if(!guild) {
+            return console.error("Target guild not found")
+        }
+        let sevenDaysAgo = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
+        const query = {
+            startTime: {$lt: sevenDaysAgo}
+        }
+        Event.find(query).then((events) => {
+            events.forEach((event) => {
+                const eventChannel = guild.channels.cache.find(channel => channel.name.replace(/-/g, '') === event.name)
+                if(eventChannel) {
+                    console.log("sending warning...")
+                    eventChannel.send("@everyone This channel will be deleted soon. Remember to save any photos you like before that happens! <:klee_announcement:968364858062045185>")
+                }
+                Event.deleteOne(
+                    { eventId: {$eq: event.eventId} },
+                    (error, docs) => {
+                        if(error) {
+                            console.log(error)
+                        }
+                        console.log(docs)
+                    }
+                )
+            })
+        })
+    }, null, true, "America/Los_Angeles");
+    warningEventJob.start();
 }
 
 const AddSubscribersToRole = (guild, event, role) => {
