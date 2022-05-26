@@ -258,9 +258,9 @@ const StartWarningEventJob = () => {
         if(!guild) {
             return console.error("Target guild not found")
         }
-        let sevenDaysAgo = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
+        let sixDaysAgo = new Date(new Date().getTime() - (6 * 24 * 60 * 60 * 1000));
         const query = {
-            startTime: {$lt: sevenDaysAgo}
+            startTime: {$lt: sixDaysAgo}
         }
         Event.find(query).then((events) => {
             events.forEach((event) => {
